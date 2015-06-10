@@ -1,0 +1,43 @@
+<div class="container">
+
+    <div class="page-header">
+        <h1 class="visible-lg">Eventos</h1>
+        <p class="lead hidden-lg">Eventos</p>
+        <p>Criação de um novo evento.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <form class="form-group" name="form">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="txtDescription">Description:</label>
+                        <input id="txtDescription" type="text" ng-model="vm.event.description" class="form-control" required />
+                        <label for="txtDate">Date of Occurrence:</label>
+                        <input id="txtDate" type="date" ng-model="vm.event.dateEventOccurrence" class="form-control" required />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="cmbCriticyLevel">Criticy Level:</label>
+                        <select class="form-control" id="cmbCriticyLevel" ng-model="vm.event.criticyLevel" ng-options="level for level in vm.levels" required></select>
+                        <label for="txtPrinter">Printer Name:</label>
+                        <input id="txtPrinter" type="text" ng-model="vm.event.printerName" class="form-control" required />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div>
+                        <a ui-sref="events.list"><button class="btn btn-primary"><i class="fa fa-backward"></i> Voltar</button></a>
+                        <a ><button ng-disabled="form.$invalid" class="btn btn-success" type="submit" ng-click="vm.save()"><i class="fa fa-save"></i> Salvar</button> </a>
+                    </div>
+                </div>
+
+            </form>
+            <div class="row">
+                <p class="lead">Preview</p>
+                
+                <event-panel event="vm.event"></event-panel>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,63 @@
+<div class="container">
+
+    <div class="page-header">
+        <h1 class="visible-lg">Eventos</h1>
+        <p class="lead hidden-lg">Eventos</p>
+        <p>Apresentação do resumo dos eventos das impressoras.</p>
+    </div>
+      
+    <div class="row">
+        <div class="col-md-12">
+            <a><button ng-click="vm.refresh()" class="btn btn-primary"><i class="fa fa-refresh"></i> Refresh</button></a>
+            <a ui-sref="events.details({id:vm.selectedEvent.id})"><button class="btn btn-primary"><i class="fa fa-cog"></i> Properties</button></a>
+            <a ui-sref="events.create"><button class=" btn btn-success"><i class="fa fa-info"></i> Create Event</button></a>
+            <a ng-click="vm.delete({id:vm.selectedEvent.id})"><button class="btn btn-danger"><i class="fa fa-trash-o"></i> Delete Event</button></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <form role="form">
+            <div class="form-group ">
+                <div class="col-md-6">
+                    <label for="filterText">Pesquisar:</label>
+                    <input type="text" class="form-control" id="filterText" placeholder="Pesquisar" ng-model="filterText">
+                </div>
+                <div class="col-md-4">
+                    <label for="numberLimit">Limitar:</label>
+                    <input type="number" class="form-control" id="numberLimit" ng-model="numberLimit" />
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Information</th>
+                        <th>Printer Name</th>
+                        <th>Occurrence Date</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <i class="fa fa-spin fa-spinner" ng-show="!vm.events"></i>
+                    </tr>
+                    <tr data-ng-repeat="event in vm.events| filter : filterText | limitTo : numberLimit||7 "
+                        data-ng-click="vm.selectEvent(event)"
+                        data-ng-class="{active: vm.selectedEvent.id==event.id}">
+                        <td class="text-center"><i class="fa fa-2x fa-warning text-{{event.criticyLevel | lowercase}}"></i></td>
+                        <td><div><strong>{{event.description}}</strong><p>{{event.timeElapsed}}</p></div></td>
+                        <td>{{event.printerName}}</td>
+                        <td>{{event.dateEventOccurrence}}</td>
+                        <td>{{event.type}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+</div>

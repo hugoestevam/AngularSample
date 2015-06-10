@@ -1,0 +1,11 @@
+<div class="panel panel-{{ event.selected ? 'primary' : (event.criticyLevel | lowercase)}}" >
+    <div class="panel-heading"> {{event.description || "No information"}}</div>
+    <div class="panel-body">
+        <ul class='list-unstyled'>
+            <li>{{event.printerName || "No Printer"}}</li>
+            <li>{{event.dateEventOccurrence || "Today"}}</li>
+            <li>{{event.type}}</li>
+        </ul>
+    </div>
+    <div class="panel-footer"> {{event.timeElapsed || "Just Now"}}</div>
+</div>
