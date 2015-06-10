@@ -2,10 +2,15 @@ var del = require('del');
 var gulp = require('gulp');
 var notify = require('gulp-notify');
 var inject = require('gulp-inject');
+var concat = require('gulp-concat');
+var uglify = require('gulp-uglify');
+var templateCache = require('gulp-uglify');
 var connect = require('gulp-connect');
 var mainBowerFiles = require('main-bower-files');
 var historyApiFallback = require('connect-history-api-fallback');
 var runSequence = require('run-sequence');
+var templateCache = require('gulp-angular-templatecache');
+var streamSeries = require('stream-series');
 
 var config = {
     distFolder: './dist/'
@@ -24,7 +29,7 @@ gulp.task('inject', function () {
 
 gulp.task('connect', function () {
 	connect.server({
-		root: 'src',
+		root: 'dist',
 		livereload: true,
 		middleware: function(connect, opt) {
 			return [ historyApiFallback() ];
@@ -57,16 +62,56 @@ gulp.task('clean', function (cb) {
  * Copia os arquivos para a pasta de saida
  */
 
-gulp.task('copyDist', function () {
-    return gulp.src('src/**/*.*')
+gulp.task('copyContent', function () {
+    return gulp.src('src/content/**/*.*')
                .pipe(gulp.dest(config.distFolder));
 });
 
+gulp.task('scripts', function () {
+    var templateCacheOptions = {
+        module: 'app',
+        root: 'app/'
+    };
+
+    var cachedTemplates = gulp.src('./src/app/**/*.html')
+                              .pipe(templateCache(templateCacheOptions));
+
+    return streamSeries(
+        gulp.src('./src/app/**/*.module.js'),
+        gulp.src(['./src/app/**/*.js', '!./src/app/**/*.module.js']),
+        cachedTemplates
+    )
+    .pipe(concat('app.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest(config.distFolder));
+});
+
+gulp.task('copyIndex', function () {
+    var injectOptions = {
+        ignorePath: 'dist',
+        addRootSlash: false
+    };
+
+    var toInject = [
+        config.distFolder + '*.js',
+        config.distFolder + '*.css'
+    ];
+
+    return gulp.src('./src/index.html')
+               .pipe(inject(gulp.src(mainBowerFiles(), { read: false }), { name: 'bower', ignorePath: 'src', addRootSlash: false }))
+               .pipe(inject(gulp.src(toInject), injectOptions))
+               .pipe(gulp.dest(config.distFolder));
+});
+
+gulp.task('copyBower', function () {
+    return gulp.src('src/bower_components/**/*.*')
+               .pipe(gulp.dest(config.distFolder + 'bower_components/'));
+});
 
 /*
  * Gera os arquivos de distribuição
  */
 
 gulp.task('Dist', ['clean'], function() {
-    runSequence('inject', 'copyDist');
+    runSequence('scripts', 'copyContent', 'copyBower', 'copyIndex');
 });
