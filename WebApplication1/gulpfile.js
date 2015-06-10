@@ -1,9 +1,15 @@
+var del = require('del');
 var gulp = require('gulp');
 var notify = require('gulp-notify');
 var inject = require('gulp-inject');
 var connect = require('gulp-connect');
 var mainBowerFiles = require('main-bower-files');
 var historyApiFallback = require('connect-history-api-fallback');
+var runSequence = require('run-sequence');
+
+var config = {
+    distFolder: './dist/'
+};
 
 gulp.task('inject', function () {
 	var target = gulp.src('src/index.html');
@@ -36,3 +42,31 @@ gulp.task('watch', function () {
 });
 
 gulp.task('default', ['connect', 'watch']);
+
+/*
+ * Apaga todos os arquivos da pasta de distribuição.
+ * 
+ */
+gulp.task('clean', function (cb) {
+    return del([
+        config.distFolder
+    ], cb);
+});
+
+/*
+ * Copia os arquivos para a pasta de saida
+ */
+
+gulp.task('copyDist', function () {
+    return gulp.src('src/**/*.*')
+               .pipe(gulp.dest(config.distFolder));
+});
+
+
+/*
+ * Gera os arquivos de distribuição
+ */
+
+gulp.task('Dist', ['clean'], function() {
+    runSequence('inject', 'copyDist');
+});
