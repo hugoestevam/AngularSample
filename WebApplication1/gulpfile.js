@@ -6,6 +6,7 @@ var connect = require('gulp-connect');
 var mainBowerFiles = require('main-bower-files');
 var historyApiFallback = require('connect-history-api-fallback');
 var runSequence = require('run-sequence');
+var zip = require('gulp-zip');
 
 var config = {
     distFolder: './dist/'
@@ -54,12 +55,13 @@ gulp.task('clean', function (cb) {
 });
 
 /*
- * Copia os arquivos para a pasta de saida
+ * Compacta os arquivos e copia para a pasta de saida
  */
 
-gulp.task('copyDist', function () {
+gulp.task('compactToDist', function () {
     return gulp.src('src/**/*.*')
-               .pipe(gulp.dest(config.distFolder));
+        .pipe(zip('artifacts.zip'))
+        .pipe(gulp.dest(config.distFolder));
 });
 
 
@@ -68,5 +70,5 @@ gulp.task('copyDist', function () {
  */
 
 gulp.task('Dist', ['clean'], function() {
-    runSequence('inject', 'copyDist');
+    runSequence('inject', 'compactToDist');
 });
